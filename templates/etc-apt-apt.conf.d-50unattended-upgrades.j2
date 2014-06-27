@@ -1,0 +1,85 @@
+///////////////////////////////////////////////////////////////
+// This file is managed by Ansible.
+// Local changes will be overwritten next time Anisble is run.
+// DO NOT MAKE LOCAL CHANGES
+// {{ ansible_managed }}
+///////////////////////////////////////////////////////////////
+// Automatically upgrade packages from these (origin:archive) pairs
+Unattended-Upgrade::Allowed-Origins {
+{% if aspects_unattended_upgrades_main_config.allowed_origins.security %}
+	"${distro_id}:${distro_codename}-security";
+{% endif %}
+{% if aspects_unattended_upgrades_main_config.allowed_origins.updates %}
+	"${distro_id}:${distro_codename}-updates";
+{% endif %}
+{% if aspects_unattended_upgrades_main_config.allowed_origins.proposed %}
+	"${distro_id}:${distro_codename}-proposed";
+{% endif %}
+{% if aspects_unattended_upgrades_main_config.allowed_origins.backports %}
+	"${distro_id}:${distro_codename}-backports";
+{% endif %}
+};
+
+// List of packages to not update
+Unattended-Upgrade::Package-Blacklist {
+{% if aspects_unattended_upgrades_main_config.package_blacklist is defined %}
+{% for package in aspects_unattended_upgrades_main_config.package_blacklist %}
+{% if package != "whitelist" %}
+  "{{ package }}";
+{% endif %}
+{% endfor %}
+{% endif %}
+//	"vim";
+//	"libc6";
+//	"libc6-dev";
+//	"libc6-i686";
+};
+
+// This option allows you to control if on a unclean dpkg exit
+// unattended-upgrades will automatically run 
+//   dpkg --force-confold --configure -a
+// The default is true, to ensure updates keep getting installed
+Unattended-Upgrade::AutoFixInterruptedDpkg "{{ aspects_unattended_upgrades_main_config.auto_fix_interrupted_dpkg }}";
+
+
+// Split the upgrade into the smallest possible chunks so that
+// they can be interrupted with SIGUSR1. This makes the upgrade
+// a bit slower but it has the benefit that shutdown while a upgrade
+// is running is possible (with a small delay)
+Unattended-Upgrade::MinimalSteps "{{ aspects_unattended_upgrades_main_config.minimal_steps }}";
+
+// Install all unattended-upgrades when the machine is shuting down
+// instead of doing it in the background while the machine is running
+// This will (obviously) make shutdown slower
+Unattended-Upgrade::InstallOnShutdown "{{ aspects_unattended_upgrades_main_config.install_on_shutdown }}";
+
+// Send email to this address for problems or packages upgrades
+// If empty or unset then no email is sent, make sure that you
+// have a working mail setup on your system. A package that provides
+// 'mailx' must be installed.
+{% if aspects_unattended_upgrades_main_config.notify_email.enable == "yes" %}
+Unattended-Upgrade::Mail "{{ aspects_unattended_upgrades_main_config.notify_email.email }}";
+{% endif %}
+
+// Set this value to "true" to get emails only on errors. Default
+// is to always send a mail if Unattended-Upgrade::Mail is set
+//Unattended-Upgrade::MailOnlyOnError "true";
+{% if aspects_unattended_upgrades_main_config.notify_email.enable == "yes" %}
+Unattended-Upgrade::MailOnlyOnError "{{ aspects_unattended_upgrades_main_config.notify_email.only_on_error }}";
+{% endif %}
+
+// Do automatic removal of new unused dependencies after the upgrade
+// (equivalent to apt-get autoremove)
+Unattended-Upgrade::Remove-Unused-Dependencies "{{ aspects_unattended_upgrades_main_config.autoremove }}";
+
+// Automatically reboot *WITHOUT CONFIRMATION* if a 
+// the file /var/run/reboot-required is found after the upgrade 
+Unattended-Upgrade::Automatic-Reboot "{{ aspects_unattended_upgrades_main_config.autoreboot }}";
+
+
+// Use apt bandwidth limit feature, this example limits the download
+// speed to 70kb/sec
+//Acquire::http::Dl-Limit "70";
+{% if aspects_unattended_upgrades_main_config.bandwidth_limit != "false" %}
+Acquire::http::Dl-Limit "{{ aspects_unattended_upgrades_main_config.bandwidth_limit }}";
+{% endif %}

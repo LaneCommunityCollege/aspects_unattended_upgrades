@@ -1,0 +1,11 @@
+///////////////////////////////////////////////////////////////
+// This file is managed by Ansible.
+// Local changes will be overwritten next time Ansible is run.
+// DO NOT MAKE LOCAL CHANGES
+// {{ ansible_managed }}
+///////////////////////////////////////////////////////////////
+
+APT::Periodic::Update-Package-Lists "{{ aspects_unattended_upgrades_periodic_config.updatepackagelists }}";
+APT::Periodic::Download-Upgradeable-Packages "{{ aspects_unattended_upgrades_periodic_config.downloadupgradeablepackages }}";
+APT::Periodic::AutocleanInterval "{{ aspects_unattended_upgrades_periodic_config.autocleaninterval }}";
+APT::Periodic::Unattended-Upgrade "{{ aspects_unattended_upgrades_periodic_config.unattendedupgrade }}";

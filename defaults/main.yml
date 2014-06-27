@@ -1,0 +1,27 @@
+---
+# defaults file for aspects_unattended_upgrades
+aspects_unattended_upgrades_periodic_config:
+  unattendedupgrade: 1
+  updatepackagelists: 1
+  downloadupgradeablepackages: 0
+  autocleaninterval: 7
+
+aspects_unattended_upgrades_main_config:
+  allowed_origins:
+    security: yes
+    updates: no
+    proposed: no
+    backports: no
+  package_blacklist:
+    vim: "vim"
+    libc6: "whitelist"
+  auto_fix_interrupted_dpkg: "true"
+  minimal_steps: "false"
+  install_on_shutdown: "false"
+  notify_email:
+    enable: no
+    email: "root@localhost"
+    only_on_error: "false"
+  autoremove: "false"
+  autoreboot: "false"
+  bandwidth_limit: "false"
