@@ -12,9 +12,9 @@ aspects_unattended_upgrades_main_config:
     updates: no
     proposed: no
     backports: no
-  package_blacklist:
-    vim: "vim"
-    libc6: "whitelist"
+  package_blacklist: {}
+#    vim: "vim"
+#    libc6: "whitelist"
   auto_fix_interrupted_dpkg: "true"
   minimal_steps: "false"
   install_on_shutdown: "false"
