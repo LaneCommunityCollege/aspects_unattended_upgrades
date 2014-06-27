@@ -4,16 +4,16 @@
   when: ansible_os_family == "Debian"
   apt: state=latest pkg=unattended-upgrades
   tags:
-    - aspects_unatended_upgrades
+    - aspects_unattended_upgrades
 
 - name: set unattended upgrades template
   when: ansible_os_family == "Debian"
   template: src=etc-apt-apt.conf.d-50unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/50unattended-upgrades
   tags:
-    - aspects_unatended_upgrades
+    - aspects_unattended_upgrades
 
 - name: set periodic apt tasks template
   when: ansible_os_family == "Debian"
   template: src=etc-apt-apt.conf.d-10periodic.j2 dest=/etc/apt/apt.conf.d/10periodic
   tags:
-    - aspects_unatended_upgrades
+    - aspects_unattended_upgrades
