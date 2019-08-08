@@ -1,27 +1,82 @@
 ---
-# defaults file for aspects_unattended_upgrades
-aspects_unattended_upgrades_periodic_config:
-  unattendedupgrade: 1
-  updatepackagelists: 1
-  downloadupgradeablepackages: 0
-  autocleaninterval: 7
+aspects_unattended_upgrades_enabled: False
 
+# Config in /etc/apt/apt.conf.d/10periodic
+# Template file: etc-apt-apt.conf.d-10periodic.j2
+aspects_unattended_upgrades_periodic_config:
+  enable: # For APT::Periodic::Enable
+    enabled: True
+    value: "0"
+  downloadupgradeablepackages:
+    enabled: True
+    value: "0"
+  autocleaninterval:
+    enabled: True
+    value: "7"
+
+# Config in /etc/apt/apt.conf.d/20auto-upgrades
+# Template file: etc-apt-apt.conf.d-20auto-upgrades.j2
+aspects_unattended_upgrades_auto_upgrades_config:
+  update_package_lists:
+    enabled: True
+    value: "1"
+  unattended_upgrade:
+    enabled: True
+    value: "1"
+
+# Config in /etc/apt/apt.conf.d/50unattended-upgrades
+# template file: etc-apt-apt.conf.d-50unattendedupgrades.j2
 aspects_unattended_upgrades_main_config:
   allowed_origins:
-    security: yes
-    updates: no
-    proposed: no
-    backports: no
-  package_blacklist: {}
+    security: True
+    updates: False
+    proposed: False
+    backports: False
+  package_blacklist:
+    enabled: False
+    list: {}
 #    vim: "vim"
 #    libc6: "whitelist"
-  auto_fix_interrupted_dpkg: "true"
-  minimal_steps: "false"
-  install_on_shutdown: "false"
+  auto_fix_interrupted_dpkg:
+    enabled: False
+    value: "true"
+  minimal_steps:
+    enabled: True
+    value: "false"
+  install_on_shutdown:
+    enabled: True
+    value: "false"
   notify_email:
-    enable: no
+    enabled: True
     email: "root@localhost"
     only_on_error: "false"
-  autoremove: "false"
-  autoreboot: "false"
-  bandwidth_limit: "false"
+  autoremove:
+    enabled: True
+    value: "false"
+  autoreboot:
+    enabled: True
+    value: "false"
+  automatic_reboot_time:
+    enabled: False
+    value: "now"
+  automatic_reboot_with_users:
+    enabled: False
+    value: "true"
+  bandwidth_limit:
+    enabled: True
+    value: "false"
+  syslog_enable:
+    enabled: False
+    value: "false"
+  syslog_facility:
+    enabled: False
+    value: "daemon"
+
+aspects_packages_packages:
+  unattended-upgrades:
+    state: "present"
+    Ubuntu:
+      1604: "unattended-upgrades"
+      1804: "unattended-upgrades"
+    Debian:
+      9: "unattended-upgrades"

@@ -1,0 +1,14 @@
+///////////////////////////////////////////////////////////////
+// This file is managed by Ansible.
+// Local changes will be overwritten next time Anisble is run.
+// DO NOT MAKE LOCAL CHANGES
+// {{ ansible_managed }}
+///////////////////////////////////////////////////////////////
+
+{% if aspects_unattended_upgrades_auto_upgrades_config.update_package_lists.enabled %}
+APT::Periodic::Update-Package-Lists "{{ aspects_unattended_upgrades_auto_upgrades_config.update_package_lists.value }}";
+{% endif %}
+
+{% if aspects_unattended_upgrades_auto_upgrades_config.unattended_upgrade.enabled %}
+APT::Periodic::Unattended-Upgrade "{{ aspects_unattended_upgrades_auto_upgrades_config.unattended_upgrade.value }}";
+{% endif %}

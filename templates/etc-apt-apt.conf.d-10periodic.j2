@@ -5,7 +5,13 @@
 // {{ ansible_managed }}
 ///////////////////////////////////////////////////////////////
 
-APT::Periodic::Update-Package-Lists "{{ aspects_unattended_upgrades_periodic_config.updatepackagelists }}";
-APT::Periodic::Download-Upgradeable-Packages "{{ aspects_unattended_upgrades_periodic_config.downloadupgradeablepackages }}";
-APT::Periodic::AutocleanInterval "{{ aspects_unattended_upgrades_periodic_config.autocleaninterval }}";
-APT::Periodic::Unattended-Upgrade "{{ aspects_unattended_upgrades_periodic_config.unattendedupgrade }}";
+{% if aspects_unattended_upgrades_periodic_config.enable.enabled %}
+APT::Periodic::Enable "{{ aspects_unattended_upgrades_periodic_config.enable.value }}";
+{% endif %}
+{% if aspects_unattended_upgrades_periodic_config.downloadupgradeablepackages.enabled %}
+APT::Periodic::Download-Upgradeable-Packages "{{ aspects_unattended_upgrades_periodic_config.downloadupgradeablepackages.value }}";
+{% endif %}
+
+{% if aspects_unattended_upgrades_periodic_config.autocleaninterval.enabled %}
+APT::Periodic::AutocleanInterval "{{ aspects_unattended_upgrades_periodic_config.autocleaninterval.value }}";
+{% endif %}

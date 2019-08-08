@@ -20,66 +20,94 @@ Unattended-Upgrade::Allowed-Origins {
 {% endif %}
 };
 
+{% if aspects_unattended_upgrades_main_config.package_blacklist is defined %}
+{% if aspects_unattended_upgrades_main_config.package_blacklist.enabled %}
 // List of packages to not update
 Unattended-Upgrade::Package-Blacklist {
-{% if aspects_unattended_upgrades_main_config.package_blacklist is defined %}
-{% for package in aspects_unattended_upgrades_main_config.package_blacklist %}
+{% for package in aspects_unattended_upgrades_main_config.package_blacklist.list %}
 {% if package != "whitelist" %}
   "{{ package }}";
 {% endif %}
 {% endfor %}
-{% endif %}
-//	"vim";
-//	"libc6";
-//	"libc6-dev";
-//	"libc6-i686";
 };
+{% endif %}
+{% endif %}
 
+{% if aspects_unattended_upgrades_main_config.auto_fix_interrupted_dpkg.enabled %}
 // This option allows you to control if on a unclean dpkg exit
-// unattended-upgrades will automatically run 
+// unattended-upgrades will automatically run
 //   dpkg --force-confold --configure -a
 // The default is true, to ensure updates keep getting installed
-Unattended-Upgrade::AutoFixInterruptedDpkg "{{ aspects_unattended_upgrades_main_config.auto_fix_interrupted_dpkg }}";
+Unattended-Upgrade::AutoFixInterruptedDpkg "{{ aspects_unattended_upgrades_main_config.auto_fix_interrupted_dpkg.value }}";
+{% endif %}
 
-
+{% if aspects_unattended_upgrades_main_config.minimal_steps.enabled %}
 // Split the upgrade into the smallest possible chunks so that
 // they can be interrupted with SIGUSR1. This makes the upgrade
 // a bit slower but it has the benefit that shutdown while a upgrade
 // is running is possible (with a small delay)
-Unattended-Upgrade::MinimalSteps "{{ aspects_unattended_upgrades_main_config.minimal_steps }}";
+Unattended-Upgrade::MinimalSteps "{{ aspects_unattended_upgrades_main_config.minimal_steps.value }}";
+{% endif %}
 
+{% if aspects_unattended_upgrades_main_config.install_on_shutdown.enabled %}
 // Install all unattended-upgrades when the machine is shuting down
 // instead of doing it in the background while the machine is running
 // This will (obviously) make shutdown slower
-Unattended-Upgrade::InstallOnShutdown "{{ aspects_unattended_upgrades_main_config.install_on_shutdown }}";
+Unattended-Upgrade::InstallOnShutdown "{{ aspects_unattended_upgrades_main_config.install_on_shutdown.value }}";
+{% endif %}
 
+{% if aspects_unattended_upgrades_main_config.notify_email.enabled == True %}
 // Send email to this address for problems or packages upgrades
 // If empty or unset then no email is sent, make sure that you
 // have a working mail setup on your system. A package that provides
 // 'mailx' must be installed.
-{% if aspects_unattended_upgrades_main_config.notify_email.enable == True %}
 Unattended-Upgrade::Mail "{{ aspects_unattended_upgrades_main_config.notify_email.email }}";
 {% endif %}
 
+{% if aspects_unattended_upgrades_main_config.notify_email.enabled == True %}
 // Set this value to "true" to get emails only on errors. Default
 // is to always send a mail if Unattended-Upgrade::Mail is set
 //Unattended-Upgrade::MailOnlyOnError "true";
-{% if aspects_unattended_upgrades_main_config.notify_email.enable == True %}
 Unattended-Upgrade::MailOnlyOnError "{{ aspects_unattended_upgrades_main_config.notify_email.only_on_error }}";
 {% endif %}
 
+{% if aspects_unattended_upgrades_main_config.autoremove.enabled %}
 // Do automatic removal of new unused dependencies after the upgrade
 // (equivalent to apt-get autoremove)
-Unattended-Upgrade::Remove-Unused-Dependencies "{{ aspects_unattended_upgrades_main_config.autoremove }}";
+Unattended-Upgrade::Remove-Unused-Dependencies "{{ aspects_unattended_upgrades_main_config.autoremove.value }}";
+{% endif %}
 
-// Automatically reboot *WITHOUT CONFIRMATION* if a 
-// the file /var/run/reboot-required is found after the upgrade 
-Unattended-Upgrade::Automatic-Reboot "{{ aspects_unattended_upgrades_main_config.autoreboot }}";
+{% if aspects_unattended_upgrades_main_config.autoreboot.enabled %}
+// Automatically reboot *WITHOUT CONFIRMATION* if a
+// the file /var/run/reboot-required is found after the upgrade
+Unattended-Upgrade::Automatic-Reboot "{{ aspects_unattended_upgrades_main_config.autoreboot.value }}";
+{% endif %}
 
+{% if aspects_unattended_upgrades_main_config.automatic_reboot_with_users.enabled == True %}
+// Automatically reboot even if there are users currently logged in.
+Unattended-Upgrade::Automatic-Reboot-WithUsers "{{ aspects_unattended_upgrades_main_config.automatic_reboot_with_users.value }}";
+{% endif %}
 
+{% if aspects_unattended_upgrades_main_config.automatic_reboot_time.enabled == True %}
+// If automatic reboot is enabled and needed, reboot at the specific
+// time instead of immediately
+//  Default: "now"
+Unattended-Upgrade::Automatic-Reboot-Time "{{ aspects_unattended_upgrades_main_config.automatic_reboot_time.value }}";
+{% endif %}
+
+{% if aspects_unattended_upgrades_main_config.bandwidth_limit.enabled %}
 // Use apt bandwidth limit feature, this example limits the download
 // speed to 70kb/sec
 //Acquire::http::Dl-Limit "70";
-{% if aspects_unattended_upgrades_main_config.bandwidth_limit != "false" %}
-Acquire::http::Dl-Limit "{{ aspects_unattended_upgrades_main_config.bandwidth_limit }}";
+Acquire::http::Dl-Limit "{{ aspects_unattended_upgrades_main_config.bandwidth_limit.value }}";
+{% endif %}
+
+{% if aspects_unattended_upgrades_main_config.syslog_enable.enabled == True %}
+// Enable logging to syslog. Default is False
+// Unattended-Upgrade::SyslogEnable "{{ aspects_unattended_upgrades_main_config.syslog_enable.value }}";
+{% endif %}
+
+{% if aspects_unattended_upgrades_main_config.syslog_facility.enabled == True %}
+// Specify syslog facility. Default is daemon
+// Unattended-Upgrade::SyslogFacility "{{ aspects_unattended_upgrades_main_config.syslog_facility.value }}";
 {% endif %}

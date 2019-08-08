@@ -1,118 +1,105 @@
 # aspects_unattended_upgrades
 
-Install and configure the unattended upgrades utility.
-
-Note: This role will stomp any configuration in the /etc/apt/apt.conf.d/10periodic file. I have never run into anything other than unattended-upgrades that uses that file, but you should be aware it isn't necessarily a file only used by unattended-upgrades. Pull requests to make this role not stomp non-unattended-upgrade configuration would be awesome.
+Install `unattended-upgrades` via `aspects_packages`, and configure it via the `/etc/apt/apt.conf.d/{10periodic, 20auto-upgrades, 50unattended-upgrades}` files.
 
 # Requirements
 Set ```hash_behaviour=merge``` in your ansible.cfg file.
 
+# Setup
+If you chose not to use `aspects_packages`, you will need to install `unattended-upgrades` before running this role.
+
 # Role Variables
-
-## aspects_unattended_upgrades_periodic_config
-Configure periodic apt tasks.
-### unattendedupgrade
-APT::Periodic::Unattended-Upgrade "0";
-
-- Run the "unattended-upgrade" security upgrade script every n-days (0=disabled)
-
-Role Default: 1
-### updatepackagelists
-APT::Periodic::Update-Package-Lists "0";
-
-- Do "apt-get update" automatically every n-days (0=disable)
-
-Role Default: 1
-### downloadupgradeablepackages
-APT::Periodic::Download-Upgradeable-Packages "0";
-
-- Do "apt-get upgrade --download-only" every n-days (0=disable)
-
-Role Default: 0
-### autocleaninterval
-APT::Periodic::AutocleanInterval "0";
-
-- Do "apt-get autoclean" every n-days (0=disable)
-
-Role Default: 7
-## aspects_unattended_upgrades_main_config
-### allowed_origins:
-####   security
-Enable or disable security updates.
-
-Values: yes|no
-
-Role Default: yes
-####   updates
-Enable or disable non-security updates.
-
-Values: yes|no
-
-Role Default: no
-####   proposed
-Enable or disable proposed updates.
-
-Values: yes|no
-
-Role Default: no
-####   backports
-Enable or disable backport updates.
-
-Values: yes|no
-
-Role Default: no
-### package_blacklist:
-A dictionary of packages that should not be automatically upgraded.
-
-Values: key: "packagename"
-
-Use a unique key so that you can override individual packages in your vars.
-
-Role Default: {}
-
-See the defaults/main.yml file for commented out examples.
-### notify_email
-Send emails when upgrades run.
-#### enable
-Values: yes|no
-
-Role Default: no
-#### email
-Values: Any valid email address.
-
-Role Default: root@localhost
-#### only_on_error
-Values: true|false
-
-Role Default: false
-
-### Other variables
-For the following, check defaults/main.yml for the default values, and the template file for what options are available.
-* auto_fix_interrupted_dpkg
-* minimal_steps
-* install_on_shutdown
-* autoremove
-* autoreboot
-* bandwidth_limit
+What I consider reasonable defaults are configured in [defaults/main.yml](defaults/main.yml). Check the templates for how they are used. 
 
 # Example Playbook
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- hosts:
+    - aspects_unattended_upgrades
+  #  - aspectscentos7
+  #  - aspectstrusty
+  #  - aspectsxenial
+  #  - aspectsstretch
+  #  - aspectsoraclelinux7
+  #  - aspectbionic
+  vars:
+    ansible_become: True
+    aspects_unattended_upgrades_enabled: True
+    aspects_packages_enabled: True
 
-    - hosts: servers
-      roles:
-         - { role: username.aspects_unattended_upgrades }
-      vars:
-        aspects_unattended_upgrades_periodic_config:
-          unattendedupgrade: 1
-        aspects_unattended_upgrades_main_config:
-          allowed_origins:
-            security: yes
-            updates: yes
-          notify_email:
-              enable: yes
-              email: "admin@example.org"
+    # Config in /etc/apt/apt.conf.d/10periodic
+    # Template file: etc-apt-apt.conf.d-10periodic.j2
+    aspects_unattended_upgrades_periodic_config:
+      enable: # For APT::Periodic::Enable
+        enabled: True
+        value: "0"
+      downloadupgradeablepackages:
+        enabled: True
+        value: "0"
+      autocleaninterval:
+        enabled: True
+        value: "7"
 
+    # Config in /etc/apt/apt.conf.d/20auto-upgrades
+    # Template file: etc-apt-apt.conf.d-20auto-upgrades.j2
+    aspects_unattended_upgrades_auto_upgrades_config:
+      update_package_lists:
+        enabled: True
+        value: "1"
+      unattended_upgrade:
+        enabled: True
+        value: "1"
+
+    # Config in /etc/apt/apt.conf.d/50unattended-upgrades
+    # template file: etc-apt-apt.conf.d-50unattendedupgrades.j2
+    aspects_unattended_upgrades_main_config:
+      allowed_origins:
+        security: True
+        updates: False
+        proposed: False
+        backports: False
+      package_blacklist:
+        enabled: False
+        list: {}
+      #    vim: "vim"
+      #    libc6: "whitelist"
+      auto_fix_interrupted_dpkg:
+        enabled: False
+        value: "true"
+      minimal_steps:
+        enabled: True
+        value: "false"
+      install_on_shutdown:
+        enabled: True
+        value: "false"
+      notify_email:
+        enabled: True
+        email: "root@localhost"
+        only_on_error: "false"
+      autoremove:
+        enabled: True
+        value: "false"
+      autoreboot:
+        enabled: True
+        value: "false"
+      automatic_reboot_time:
+        enabled: True
+        value: "now"
+      automatic_reboot_with_users:
+        enabled: False
+        value: "true"
+      bandwidth_limit:
+        enabled: True
+        value: "false"
+      syslog_enable:
+        enabled: False
+        value: "false"
+      syslog_facility:
+        enabled: False
+        value: "daemon"
+  roles:
+    - aspects_unattended_upgrades
+```
 # License
 
 MIT
