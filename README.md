@@ -76,6 +76,9 @@ What I consider reasonable defaults are configured in [defaults/main.yml](defaul
         enabled: True
         email: "root@localhost"
         only_on_error: "false"
+      remove_unused_kernel_packages:
+        enabled: False
+        value: "false"
       autoremove:
         enabled: True
         value: "false"

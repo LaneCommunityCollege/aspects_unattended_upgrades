@@ -71,6 +71,12 @@ Unattended-Upgrade::Mail "{{ aspects_unattended_upgrades_main_config.notify_emai
 Unattended-Upgrade::MailOnlyOnError "{{ aspects_unattended_upgrades_main_config.notify_email.only_on_error }}";
 {% endif %}
 
+{% if aspects_unattended_upgrades_main_config.remove_unused_kernel_packages.enabled %}
+// Remove unused automatically installed kernel-related packages
+// (kernel images, kernel headers and kernel version locked tools).
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "{{ aspects_unattended_upgrades_main_config.remove_unused_kernel_packages.value }}";
+{% endif %}
+
 {% if aspects_unattended_upgrades_main_config.autoremove.enabled %}
 // Do automatic removal of new unused dependencies after the upgrade
 // (equivalent to apt-get autoremove)
