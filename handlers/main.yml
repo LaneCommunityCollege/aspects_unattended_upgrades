@@ -1,0 +1,5 @@
+- name: "Reload systemctl daemon config"
+  systemd:
+    daemon-reload: true
+  tags:
+    - aspects_unattended_upgrades

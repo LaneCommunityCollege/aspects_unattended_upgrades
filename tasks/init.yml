@@ -19,3 +19,50 @@
     dest: /etc/apt/apt.conf.d/20auto-upgrades
   tags:
     - aspects_unattended_upgrades
+
+- name: create /etc/systemd/system/apt-daily.timer.d directory
+  when:
+    - aspects_unattended_upgrades_timer_override is defined
+    - aspects_unattended_upgrades_timer_override.enabled
+  file:
+    state: directory
+    dest: /etc/systemd/system/apt-daily.timer.d
+    owner: root
+    group: root
+  tags:
+    - aspects_unattended_upgrades
+
+- name: template /etc/systemd/system/apt-daily.timer.d/override.conf
+  when:
+    - aspects_unattended_upgrades_timer_override is defined
+    - aspects_unattended_upgrades_timer_override.enabled
+  template:
+    src: etc-systemd-system-apt-daily.timer.d-override.j2
+    dest: /etc/systemd/system/apt-daily.timer.d/override.conf
+    owner: root
+    group: root
+  notify: "Reload systemctl daemon config"
+  tags:
+    - aspects_unattended_upgrades
+
+- name: remove /etc/systemd/system/apt-daily.timer.d/override.conf file
+  when:
+    - aspects_unattended_upgrades_timer_override is defined
+    - not aspects_unattended_upgrades_timer_override.enabled
+  file:
+    state: absent
+    dest: /etc/systemd/system/apt-daily.timer.d/override.conf
+  notify: "Reload systemctl daemon config"
+  tags:
+    - aspects_unattended_upgrades
+
+- name: remove /etc/systemd/system/apt-daily.timer.d/directory
+  when:
+    - aspects_unattended_upgrades_timer_override is defined
+    - not aspects_unattended_upgrades_timer_override.enabled
+  file:
+    state: absent
+    dest: /etc/systemd/system/apt-daily.timer.d/
+  notify: "Reload systemctl daemon config"
+  tags:
+    - aspects_unattended_upgrades

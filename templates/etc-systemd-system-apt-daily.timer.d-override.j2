@@ -1,0 +1,4 @@
+#{{ ansible_managed }}
+{% if aspects_unattended_upgrades_timer_override is defined and aspects_unattended_upgrades_timer_override.enabled %}
+{{ aspects_unattended_upgrades_timer_override.block }}
+{% endif %}

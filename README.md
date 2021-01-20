@@ -11,6 +11,22 @@ If you chose not to use `aspects_packages`, you will need to install `unattended
 # Role Variables
 What I consider reasonable defaults are configured in [defaults/main.yml](defaults/main.yml). Check the templates for how they are used. 
 
+## aspects_unattended_upgrades_timer_override
+If you don't like the default timing of the apt-daily tasks, you need to override
+the `apt-daily.timer` file.
+
+Just use something like:
+
+```yaml
+aspects_unattended_upgrades_timer_override:
+  enabled: true
+  block: |
+    [Timer]
+    OnCalendar=*-*-* 1:40
+    RandomizedDelaySec=45m
+```
+If you change your mind, setting enabled to false will remove the override directory and file.
+
 # Example Playbook
 
 ```yaml
@@ -100,6 +116,12 @@ What I consider reasonable defaults are configured in [defaults/main.yml](defaul
       syslog_facility:
         enabled: False
         value: "daemon"
+    aspects_unattended_upgrades_timer_override:
+      enabled: true
+      block: |
+        [Timer]
+        OnCalendar=*-*-* 11:40
+        RandomizedDelaySec=45m
   roles:
     - aspects_unattended_upgrades
 ```
