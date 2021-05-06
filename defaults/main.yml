@@ -81,5 +81,7 @@ aspects_packages_packages:
     Ubuntu:
       1604: "unattended-upgrades"
       1804: "unattended-upgrades"
+      2004: "unattended-upgrades"
     Debian:
       9: "unattended-upgrades"
+      10: "unattended-upgrades"
